@@ -1,8 +1,8 @@
 import { Router } from "express";
-import config from "../config";
-import { generateFailedResponse, generateSuccessListResponse, generateSuccessResponse } from "../helpers/response";
-import DatabaseManager from "../services/database-manager";
-import TableManager from "../services/table-manager";
+import config from "../../config";
+import { generateFailedResponse, generateSuccessListResponse, generateSuccessResponse } from "../../helpers/response";
+import DatabaseManager from "../../services/database-manager";
+import TableManager from "../../services/table-manager";
 
 const tableRouter = Router();
 tableRouter.get("/:tableName",async (req,res)=>{    

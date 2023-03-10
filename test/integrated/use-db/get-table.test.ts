@@ -1,8 +1,9 @@
 import request from 'supertest';
-import config from '../../src/config';
-import DatabaseManager from '../../src/services/database-manager';
-import app from "../../src/app";
-import { INTERNAL_TABLE_PREFIX, USER_TABLE_PREFIX } from '../../src/config/constant';
+import config from '../../../src/config';
+import DatabaseManager from '../../../src/services/database-manager';
+import app from "../../../src/app";
+import { INTERNAL_TABLE_PREFIX, USER_TABLE_PREFIX } from '../../../src/config/constant';
+import InternalDbManager from '../../../src/services/internal-db-manager';
 
 const userCreatedTableName = 'sample';
 const internalTableName = 'internal';
@@ -27,6 +28,14 @@ afterAll(async ()=>{
     ])
 });
 
+beforeEach(async ()=>{
+    await new InternalDbManager().initialize();
+});
+
+afterEach(async ()=>{
+    await new InternalDbManager().remove();
+});
+
 describe("Test Get Table",()=>{
     it("should get table list", async ()=>{
         if(config.db) config.db = null;
@@ -34,7 +43,7 @@ describe("Test Get Table",()=>{
         await db.initialize();
         await db.run(`CREATE TABLE IF NOT EXISTS ${USER_TABLE_PREFIX}${userCreatedTableName} (id INTEGER PRIMARY KEY, name TEXT)`);
         await db.run(`CREATE TABLE IF NOT EXISTS ${INTERNAL_TABLE_PREFIX}${internalTableName} (id INTEGER PRIMARY KEY, name TEXT)`);
-        const response  = await request(app).get('/tables');
+        const response  = await request(app).get('/use-db/tables');
         expect(response.statusCode).toEqual(200);
         expect(response.body.status).toEqual(true);
         expect(response.body.data).toHaveLength(1)
@@ -45,7 +54,7 @@ describe("Test Get Table",()=>{
         const db = new DatabaseManager();
         await db.initialize();
         await db.run(`CREATE TABLE IF NOT EXISTS ${USER_TABLE_PREFIX}${userCreatedTableName} (id INTEGER PRIMARY KEY, name TEXT)`);
-        const response  = await request(app).get(`/tables/${userCreatedTableName}`);
+        const response  = await request(app).get(`/use-db/tables/${userCreatedTableName}`);
         expect(response.statusCode).toEqual(200);
         expect(response.body.status).toEqual(true);
         expect(response.body.data).toEqual({
@@ -58,7 +67,7 @@ describe("Test Get Table",()=>{
         if(config.db) config.db = null;
         const db = new DatabaseManager();
         await db.initialize();
-        const response  = await request(app).get(`/tables/${userCreatedTableName}__1`);
+        const response  = await request(app).get(`/use-db/tables/${userCreatedTableName}__1`);
         expect(response.statusCode).toEqual(404);
         expect(response.body.status).toEqual(false);
         expect(response.body.message).toEqual(`Table ${userCreatedTableName}__1 not found`);

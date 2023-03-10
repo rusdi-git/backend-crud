@@ -31,7 +31,11 @@ export default class TableManager {
         params.columns.forEach((i)=>{
             columnClause.push(`${i.name} ${i.type}${i.required?' NOT NULL':''}${i.primaryKey?' PRIMARY KEY':''}`);
         });
-        const query = `CREATE TABLE${params.allowExist?` IF NOT EXISTS`:''} ${params.isInternal?`${INTERNAL_TABLE_PREFIX}${params.name}`:`${USER_TABLE_PREFIX}${params.name}`} (${columnClause.join(',')}) STRICT`;
+        const query = `CREATE TABLE${params.allowExist?` IF NOT EXISTS`:''} ${params.isInternal?`${INTERNAL_TABLE_PREFIX}`:`${USER_TABLE_PREFIX}`}${params.name} (${columnClause.join(',')}) STRICT`;
         await this.db.run(query);
+    }
+
+    async delete(tableName:string) {
+        await this.db.run(`DROP TABLE ${USER_TABLE_PREFIX}${tableName}`)
     }
 }

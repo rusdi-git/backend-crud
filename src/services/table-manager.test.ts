@@ -61,4 +61,14 @@ describe("Table Manager Test Suite", ()=>{
         expect(createdTable.name).toEqual(newTableName);
         expect(createdTable.columns).toEqual([{name:"id",type:"INTEGER"},{name:"name",type:"TEXT"},{name:"address",type:"INTEGER"}]);
     });
+
+    it("should drop table given correct table name", async ()=>{
+        const db = new DatabaseManager();
+        await db.initialize();
+        await db.run(`CREATE TABLE IF NOT EXISTS ${USER_TABLE_PREFIX}${userCreatedTableName} (id INTEGER PRIMARY KEY, name TEXT)`);
+        const tableManager = new TableManager(db);
+        await tableManager.delete(userCreatedTableName);
+        const result = await tableManager.detail(userCreatedTableName) as {name:string,columns:{name:string;type:string}[]};
+        expect(result).toBeNull();
+    });
 })

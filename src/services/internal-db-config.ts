@@ -15,7 +15,7 @@ const internalDbConfig:Record<(typeof INTERNAL_TABLE_NAME)[number],OriginalTable
             {name:'nullable',type:"Integer"},
         ]
     },migration:{
-        name:'column',
+        name:'migration',
         allowExist:true,
         isInternal:true,
         columns:[
